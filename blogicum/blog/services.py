@@ -16,8 +16,8 @@ def get_posts() -> QuerySet[Post]:
     return post_list
 
 
-def get_limit_posts(limit: int) -> QuerySet[Post]:
-    return get_posts()[0:limit]
+def get_limit_posts() -> QuerySet[Post]:
+    return get_posts()
 
 
 def get_post(id: int) -> Post:

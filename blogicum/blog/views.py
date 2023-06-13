@@ -12,7 +12,6 @@ from .models import Post, Category, User
 from .services import get_post, get_limit_posts, get_category
 from .forms import RegisterUserForm, AddPostForm
 
-DEFAULT_LIMIT_POSTS = 5
 
 def page_not_found(request, exception):
     return render(request, 'pages/404.html', status=404)
@@ -28,6 +27,7 @@ def internal_server_error(request):
 
 class UserLoginView(LoginView):
     template_name = 'registration/login.html'
+    success_url = reverse_lazy('blog:index')
 
 
 class DjangoLogoutView(LoginRequiredMixin, LogoutView):
@@ -80,14 +80,9 @@ class PasswordsChangeView(LoginRequiredMixin, PasswordChangeView):
 
 class IndexView(ListView):
     model = Post
+    ordering = 'id'
     paginate_by = 10
     template_name = 'blog/index.html'
-    context_object_name = 'posts_list'
-
-    def get_context_data(self) -> dict:
-        page_obj = get_limit_posts(limit=DEFAULT_LIMIT_POSTS)
-        context = {'page_obj': page_obj}
-        return context
 
 
 class PostDetailView(DetailView):
@@ -125,11 +120,34 @@ class AddPostView(LoginRequiredMixin, CreateView):
         writer = User.objects.get(username=self.request.user)
         form.instance.author = writer
         context = self.get_context_data()
-        formset = context['formset']
-        if formset.is_valid():
+        if form.is_valid():
             self.object = form.save()
-            formset.instance = self.object
-            formset.save()
+            form.instance = self.object
+            form.save()
             return super().form_valid(form)
         else:
             return self.form_invalid(form)
+
+class EditPostView(LoginRequiredMixin, UpdateView):
+    model = Post
+    template_name = 'blog/create.html'
+    form_class = AddPostForm
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        return context
+
+    def form_valid(self, form) -> HttpResponse:
+        context = self.get_context_data()
+        if form.is_valid():
+            self.object = form.save()
+            form.instance = self.object
+            form.save()
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                'Новость исправлена'
+            )
+            return super().form_valid(form)
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
