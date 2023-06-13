@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
-from .models import User, Post
+from .models import User, Post, Comment
 
 
 class ChangeUserProfileForm(forms.ModelForm):
@@ -29,6 +29,12 @@ class AddPostForm(forms.ModelForm):
             'author',
             'location',
             'category',
+            'pub_date',
             'image'
         ]
         widget = {'author': forms.HiddenInput}
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ('comment',)
