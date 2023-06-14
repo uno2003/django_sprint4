@@ -1,12 +1,18 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, ReadOnlyPasswordHashField
+from django.utils.translation import gettext_lazy as _
 from .models import User, Post, Comment
 
 
 class ChangeUserProfileForm(UserChangeForm):
     email = forms.EmailField(required=True, label='Адрес электронной почты.')
-
+    password = ReadOnlyPasswordHashField(
+        label=_("Password"),
+        help_text=_(
+            "Для смены пароля перейдите по "
+            '<a href="../auth/password_change/">ссылке</a>.'
+        ),
+    )
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name',)
@@ -26,7 +32,6 @@ class AddPostForm(forms.ModelForm):
         fields = [
             'title',
             'text',
-            'author',
             'location',
             'category',
             'pub_date',

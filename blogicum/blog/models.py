@@ -99,7 +99,7 @@ class Post(PublishedModel):
         verbose_name='Категория',
     )
     image = models.ImageField(
-        upload_to='media/posts',
+        upload_to='',
         blank=True,
         null=True,
         verbose_name='Изображение'

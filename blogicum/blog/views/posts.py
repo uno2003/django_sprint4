@@ -3,16 +3,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, ListView, UpdateView, CreateView, DeleteView
 from django.contrib import messages
 
 from blog.models import Post, Category, User, Comment
 from blog.forms import AddPostForm, CommentForm
-from blog.services import get_post, get_category, get_posts
+from blog.services import get_post, get_category, get_posts, get_user_page
 from django.views.generic.edit import FormMixin
 
-from django.db.models import Count
 
 @login_required
 def add_comment(request, pk):
@@ -30,10 +28,10 @@ class IndexView(ListView):
     ordering = 'id'
     paginate_by = 10
     template_name = 'blog/index.html'
-    ordering = ['-created_at']
 
-    def get_context_data(self, *, object_list=None, **kwargs):
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # context['comment_count'] = Comment.objects.get(post=post)
         return context
 
     def get_queryset(self):
@@ -58,6 +56,15 @@ class CategoryPostView(DetailView):
     model = Category
     template_name = 'blog/category.html'
 
+    def get_queryset(self, *args, **kwargs):
+        self.category = get_object_or_404(User, username=self.kwargs.get('category_slug'))
+        return Post.objects.filter(category=self.category).order_by('-pub_date')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['profile'] = self.user
+        return context
+
     def get(self, request, category_slug: str) -> HttpResponse:
         category, post_list = get_category(category_slug)
         context = {'category': category,
@@ -69,7 +76,10 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     template_name = 'blog/create.html'
     form_class = AddPostForm
-    success_url = reverse_lazy('blog:index')
+
+    def get_success_url(self):
+        user = self.request.user.username
+        return reverse_lazy('blog:profile', kwargs={'username': user})
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)

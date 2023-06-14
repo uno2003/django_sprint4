@@ -1,8 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
-from django.urls import reverse_lazy, reverse
-from django.views.generic import DetailView, UpdateView, DeleteView
-
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
+from django.views.generic import ListView, UpdateView
 
 from blog.models import User
 
@@ -28,23 +28,23 @@ class UserEditView(LoginRequiredMixin, UpdateView):
         return self.request.user
 
 
-class UserProfileView(DetailView):
+class UserProfileView(ListView):
     template_name = 'blog/profile.html'
     model = User
+    paginate_by = 10
     slug_field = "username"
     slug_url_kwarg = "username"
 
+    def get_queryset(self, *args, **kwargs):
+        self.user = get_object_or_404(User, username=self.kwargs.get('username'))
+        return Post.objects.filter(author=self.user).order_by('-pub_date')
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['profile'] = self.get_object()
-        context['page_obj'] = self.get_queryset()
+        context['profile'] = self.user
         return context
 
-    def get_object(self):
-        return self.request.user
 
-    def get_queryset(self):
-        page_obj = Post.objects.filter(author=self.get_object())
-        return page_obj
+
 
 
