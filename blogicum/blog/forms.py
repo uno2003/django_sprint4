@@ -1,10 +1,10 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 from .models import User, Post, Comment
 
 
-class ChangeUserProfileForm(forms.ModelForm):
+class ChangeUserProfileForm(UserChangeForm):
     email = forms.EmailField(required=True, label='Адрес электронной почты.')
 
     class Meta:
@@ -37,4 +37,4 @@ class AddPostForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ('comment',)
+        fields = ('text',)

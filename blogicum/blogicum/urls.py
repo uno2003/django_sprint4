@@ -6,6 +6,9 @@ from django.views.generic import CreateView
 
 from blog.forms import RegisterUserForm
 
+handler404 = 'core.views.page_not_found'
+handler500 = 'core.views.internal_server_error'
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('blog.urls'), name='blog'),

@@ -16,10 +16,6 @@ def get_posts() -> QuerySet[Post]:
     return post_list
 
 
-def get_limit_posts() -> QuerySet[Post]:
-    return get_posts()
-
-
 def get_post(id: int) -> Post:
     return get_object_or_404(get_posts(), id=id)
 

@@ -35,5 +35,5 @@ class LocationAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('comment', 'post', 'author')
+    list_display = ('text', 'post', 'author')
 

@@ -114,15 +114,14 @@ class Post(PublishedModel):
 
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, verbose_name='Комментарий', related_name='comment')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, verbose_name='Публикация', related_name='post')
     author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор', related_name='author')
-    comment = models.TextField(null=True, blank=True)
-    date_added = models.DateTimeField(auto_now_add=True)
+    text = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return '%s - %s' % (self.post.title, self.author.username)
+        return 'Comment by {}'.format(self.author.username)
 
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
-        ordering = ('date_added',)
