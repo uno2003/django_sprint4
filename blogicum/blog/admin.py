@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, Category, Location
+from .models import Post, Category, Location, Comment
 
 
 @admin.register(Post)
@@ -33,4 +33,7 @@ class LocationAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     list_display_links = ('name',)
 
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('comment', 'post', 'author')
 
