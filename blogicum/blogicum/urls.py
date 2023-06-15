@@ -1,6 +1,10 @@
 from django.contrib import admin
-from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView, PasswordResetView, \
-    PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.views import PasswordResetDoneView
+from django.contrib.auth.views import PasswordChangeDoneView
+from django.contrib.auth.views import PasswordResetConfirmView
+from django.contrib.auth.views import PasswordResetCompleteView
+from django.contrib.auth.views import PasswordResetView
 from django.urls import path, include, reverse_lazy
 from django.conf import settings
 from django.conf.urls.static import static
@@ -22,12 +26,36 @@ urlpatterns = [
         ),
         name='registration',
     ),
-    path('auth/password_change/', PasswordChangeView.as_view(), name='password_change'),
-    path('auth/password_change/done/', PasswordChangeDoneView.as_view(), name='password_change_done'),
-    path('auth/password_reset/', PasswordResetView.as_view(), name='password_reset'),
-    path('auth/password_reset/done/', PasswordResetDoneView.as_view(), name='password_reset_done'),
-    path('auth/reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    path('auth/reset/done/', PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    path(
+        'auth/password_change/',
+        PasswordChangeView.as_view(),
+        name='password_change'
+    ),
+    path(
+        'auth/password_change/done/',
+        PasswordChangeDoneView.as_view(),
+        name='password_change_done'
+    ),
+    path(
+        'auth/password_reset/',
+        PasswordResetView.as_view(),
+        name='password_reset'
+    ),
+    path(
+        'auth/password_reset/done/',
+        PasswordResetDoneView.as_view(),
+        name='password_reset_done'
+    ),
+    path(
+        'auth/reset/<uidb64>/<token>/',
+        PasswordResetConfirmView.as_view(),
+        name='password_reset_confirm'
+    ),
+    path(
+        'auth/reset/done/',
+        PasswordResetCompleteView.as_view(),
+        name='password_reset_complete'
+    ),
 ]
 urlpatterns += [
     path('auth/', include('django.contrib.auth.urls')),

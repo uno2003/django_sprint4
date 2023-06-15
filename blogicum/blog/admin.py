@@ -33,7 +33,7 @@ class LocationAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     list_display_links = ('name',)
 
+
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('text', 'post', 'author')
-

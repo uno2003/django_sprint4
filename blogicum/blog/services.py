@@ -1,22 +1,33 @@
-from django.db.models import QuerySet, Subquery, OuterRef, Sum
+from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
 from blog.models import Category, Post, Comment, User
 
 
-def get_count_comments(post_list):
-    return post_list.select_related('comment').count()
+def get_post_comments(post_id):
+    return Comment.objects.select_related('post').filter(post__id=post_id)
+
+
+def get_user_posts(user):
+    return Post.objects.filter(author=user).order_by('-pub_date')
+
 
 def get_posts() -> QuerySet[Post]:
-
     post_list = (
         Post.objects
         .select_related('category')
         .filter(is_published=True,
                 category__is_published=True,
                 pub_date__lte=timezone.now()).order_by('-pub_date')
+
     )
+    return post_list
+
+
+def get_comments_count(post_list):
+    for post in post_list:
+        post.comment_count = Comment.objects.filter(post_id=post.pk).count()
     return post_list
 
 
@@ -34,9 +45,7 @@ def get_category(category_slug: str) -> tuple[Category, QuerySet[Post]]:
     post_list = get_posts().filter(category=category)
     return category, post_list
 
-def get_user_page(args):
-    user = get_object_or_404(User, pk=args)
-    return user
 
-def get_user_pk(args):
-    return args.user.pk
+def get_user(kwargs):
+    user = get_object_or_404(User, username=kwargs.get('username'))
+    return user

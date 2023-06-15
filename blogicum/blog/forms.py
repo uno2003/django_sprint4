@@ -1,11 +1,12 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm, ReadOnlyPasswordHashField
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import gettext_lazy as _
 from .models import User, Post, Comment
 
 
 class ChangeUserProfileForm(UserChangeForm):
-    email = forms.EmailField(required=True, label='Адрес электронной почты.')
     password = ReadOnlyPasswordHashField(
         label=_("Password"),
         help_text=_(
@@ -13,20 +14,29 @@ class ChangeUserProfileForm(UserChangeForm):
             '<a href="../auth/password_change/">ссылке</a>.'
         ),
     )
+
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name',)
+        fields = (
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+        )
 
 
 class RegisterUserForm(UserCreationForm):
-    email = forms.EmailField(required=True, label='Адрес электронной почты')
-
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('username', 'email',)
+        fields = (
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+        )
 
 
-class AddPostForm(forms.ModelForm):
+class ChangePostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = [
@@ -39,6 +49,7 @@ class AddPostForm(forms.ModelForm):
             'image'
         ]
         widget = {'author': forms.HiddenInput}
+
 
 class CommentForm(forms.ModelForm):
     class Meta:

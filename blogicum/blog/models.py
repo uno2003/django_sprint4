@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-
 User = get_user_model()
 
 
@@ -30,7 +29,7 @@ class Category(PublishedModel):
         null=False,
         verbose_name='Заголовок',
     )
-    description = models.TextField(verbose_name='Описание',)
+    description = models.TextField(verbose_name='Описание', )
     slug = models.SlugField(
         unique=True,
         null=False,
@@ -72,7 +71,7 @@ class Post(PublishedModel):
         null=False,
         verbose_name='Заголовок',
     )
-    text = models.TextField(verbose_name='Текст',)
+    text = models.TextField(verbose_name='Текст', )
     pub_date = models.DateTimeField(
         null=False,
         verbose_name='Дата и время публикации',
@@ -99,7 +98,7 @@ class Post(PublishedModel):
         verbose_name='Категория',
     )
     image = models.ImageField(
-        upload_to='',
+        upload_to='img/',
         blank=True,
         null=True,
         verbose_name='Изображение'
@@ -114,13 +113,30 @@ class Post(PublishedModel):
 
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, verbose_name='Публикация', related_name='post')
-    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор', related_name='author')
-    text = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        verbose_name='Публикация',
+        related_name='post'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Автор',
+        related_name='author'
+    )
+    text = models.TextField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name='Текст'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата создания')
 
     def __str__(self):
-        return 'Comment by {}'.format(self.author.username)
+        return 'Комментарий {}'.format(self.author.username)
 
     class Meta:
         verbose_name = 'Комментарий'
