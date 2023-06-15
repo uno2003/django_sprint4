@@ -35,6 +35,7 @@ class AddPostForm(forms.ModelForm):
             'location',
             'category',
             'pub_date',
+            'is_published',
             'image'
         ]
         widget = {'author': forms.HiddenInput}

@@ -9,7 +9,7 @@ from django.contrib import messages
 from blog.models import Post, Category, User, Comment
 from blog.forms import AddPostForm, CommentForm
 from blog.services import get_post, get_category, get_posts, get_user_page
-from django.views.generic.edit import FormMixin
+from django.views.generic.edit import FormMixin, ModelFormMixin
 
 
 @login_required
@@ -52,24 +52,26 @@ class PostDetailView(FormMixin, DetailView):
 
 
 
-class CategoryPostView(DetailView):
+class CategoryPostView(ListView):
     model = Category
     template_name = 'blog/category.html'
+    paginate_by = 10
+
 
     def get_queryset(self, *args, **kwargs):
-        self.category = get_object_or_404(User, username=self.kwargs.get('category_slug'))
-        return Post.objects.filter(category=self.category).order_by('-pub_date')
+        self.category = get_object_or_404(
+            Category.objects
+            .only('title', 'description')
+            .filter(slug=self.kwargs.get('category_slug'),
+                    is_published=True)
+        )
+        return get_posts().filter(category=self.category)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['profile'] = self.user
+        context['category'] = self.category
         return context
 
-    def get(self, request, category_slug: str) -> HttpResponse:
-        category, post_list = get_category(category_slug)
-        context = {'category': category,
-                   'post_list': post_list}
-        return render(request, self.template_name, context)
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
@@ -146,8 +148,8 @@ class CommentCreateView(CreateView):
 class CommentEditView(LoginRequiredMixin, UpdateView):
     model = Comment
     template_name = 'blog/comment.html'
+    form_class = CommentForm
     success_url = reverse_lazy('blog:index')
-
 
 
 class CommentDeleteView(LoginRequiredMixin, DeleteView):

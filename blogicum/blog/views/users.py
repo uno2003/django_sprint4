@@ -17,6 +17,7 @@ class UserLoginView(LoginView):
 
 class UserLogoutView(LoginRequiredMixin, LogoutView):
     template_name = 'registration/logged_out.html'
+    success_url = reverse_lazy('blog:index')
 
 
 class UserEditView(LoginRequiredMixin, UpdateView):
