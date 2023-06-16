@@ -86,7 +86,6 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
     model = Post
     form_class = ChangePostForm
     template_name = 'blog/create.html'
-
     success_url = reverse_lazy('blog:index')
 
     def form_valid(self, form) -> HttpResponse:

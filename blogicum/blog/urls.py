@@ -3,7 +3,7 @@ from blog.views.posts import IndexView, PostDetailView, CategoryPostView
 from blog.views.posts import PostCreateView, PostUpdateView, PostDeleteView
 from blog.views.users import UserLoginView, UserLogoutView
 from blog.views.users import UserEditView, UserProfileView
-from blog.views.comments import add_comment, CommentEditView
+from blog.views.comments import CommentCreateView, CommentEditView
 from blog.views.comments import CommentDeleteView
 
 app_name = 'blog'
@@ -47,7 +47,7 @@ urlpatterns = [
     ),
     path(
         '<int:pk>/comment/',
-        add_comment,
+        CommentCreateView.as_view(),
         name='add_comment'
     ),
     path(
