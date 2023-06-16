@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
-from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy, reverse
 from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic import CreateView, DeleteView
 from django.contrib import messages
@@ -57,6 +57,22 @@ class CategoryPostView(ListView):
         return context
 
 
+class PostMixin:
+    model = Post
+    template_name = 'blog/create.html'
+    form_class = ChangePostForm
+
+    def dispatch(self, request, *args, **kwargs):
+        post = self.get_object()
+        if (not request.user.is_authenticated
+                or post.author != self.request.user):
+            return redirect('blog:post_detail', pk=self.kwargs['pk'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('blog:post_detail', kwargs=dict(pk=self.kwargs['pk']))
+
+
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     template_name = 'blog/create.html'
@@ -82,11 +98,10 @@ class PostCreateView(LoginRequiredMixin, CreateView):
             return self.form_invalid(form)
 
 
-class PostUpdateView(LoginRequiredMixin, UpdateView):
+class PostUpdateView(PostMixin, UpdateView):
     model = Post
     form_class = ChangePostForm
     template_name = 'blog/create.html'
-    success_url = reverse_lazy('blog:index')
 
     def form_valid(self, form) -> HttpResponse:
         if form.is_valid():
@@ -103,7 +118,6 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
             return self.render_to_response(self.get_context_data(form=form))
 
 
-class PostDeleteView(LoginRequiredMixin, DeleteView):
-    model = Post
-    template_name = 'blog/create.html'
-    success_url = reverse_lazy('blog:index')
+class PostDeleteView(LoginRequiredMixin, PostMixin, DeleteView):
+    def get_success_url(self):
+        return reverse('blog:index')

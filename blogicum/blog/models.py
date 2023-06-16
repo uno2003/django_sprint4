@@ -126,17 +126,15 @@ class Comment(models.Model):
         related_name='author'
     )
     text = models.TextField(
-        max_length=255,
-        null=True,
-        blank=True,
-        verbose_name='Текст'
+        verbose_name='Задаёт текст комментария',
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
-        verbose_name='Дата создания')
+        verbose_name='Дата создания',
+    )
 
     def __str__(self):
-        return 'Комментарий {}'.format(self.author.username)
+        return f'Комментарий {self.author.username}'
 
     class Meta:
         verbose_name = 'Комментарий'

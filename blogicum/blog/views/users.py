@@ -24,7 +24,6 @@ class UserEditView(LoginRequiredMixin, UserRedirectMixin, UpdateView):
     template_name = 'blog/user.html'
     form_class = ChangeUserProfileForm
 
-    # редирект поменять
     def get_object(self):
         return self.request.user
 

@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.views.generic import CreateView, UpdateView, DeleteView
 
 from blog.forms import CommentForm
-from blog.models import Comment, Post
+from blog.models import Comment
 
 
 class CommentMixin:
@@ -12,10 +12,23 @@ class CommentMixin:
     template_name = 'blog/comment.html'
     form_class = CommentForm
 
-    def get_success_url(self):
-        return reverse('blog:post_detail', kwargs=dict(pk=self.kwargs['post_id']))
+    def dispatch(self, request, *args, **kwargs):
+        comment = self.get_object()
+        if comment.author != self.request.user:
+            raise Http404()
+        return super().dispatch(request, *args, **kwargs)
 
-class CommentCreateView(LoginRequiredMixin, CommentMixin, CreateView):
+    def get_success_url(self):
+        return reverse(
+            'blog:post_detail',
+            kwargs=dict(pk=self.kwargs['post_id'])
+        )
+
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    template_name = 'blog/comment.html'
+    form_class = CommentForm
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -23,16 +36,13 @@ class CommentCreateView(LoginRequiredMixin, CommentMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('blog:post_detail', kwargs=dict(pk=self.kwargs['pk']))
+        return reverse(
+            'blog:post_detail',
+            kwargs=dict(pk=self.kwargs['pk'])
+        )
 
 
 class CommentEditView(LoginRequiredMixin, CommentMixin, UpdateView):
-
-    def dispatch(self, request, *args, **kwargs):
-        comment = self.get_object()
-        if comment.author != self.request.user:
-            raise Http404()
-        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -40,11 +50,4 @@ class CommentEditView(LoginRequiredMixin, CommentMixin, UpdateView):
 
 
 class CommentDeleteView(LoginRequiredMixin, CommentMixin, DeleteView):
-
-    def dispatch(self, request, *args, **kwargs):
-        comment = self.get_object()
-        if comment.author != self.request.user:
-            raise Http404()
-        return super().dispatch(request, *args, **kwargs)
-
-
+    pass
