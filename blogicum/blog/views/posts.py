@@ -1,5 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
+from django.db.models import QuerySet
+from django.http import (HttpResponse,
+                         HttpResponsePermanentRedirect,
+                         HttpResponseRedirect)
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import DetailView, ListView, UpdateView
@@ -10,7 +13,7 @@ from django.views.generic.edit import FormMixin
 from blog.models import Post, Category, User
 from blog.forms import ChangePostForm, CommentForm
 from blog.services import get_post, get_category, get_posts
-from blog.services import get_post_comments, get_comments_count
+from blog.services import get_post_comments
 
 
 class IndexView(ListView):
@@ -19,13 +22,12 @@ class IndexView(ListView):
     paginate_by = 10
     template_name = 'blog/index.html'
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict[str, any]:
         context = super().get_context_data(**kwargs)
         return context
 
-    def get_queryset(self):
-        post_list = get_posts()
-        return get_comments_count(post_list)
+    def get_queryset(self) -> QuerySet[Post]:
+        return get_posts()
 
 
 class PostDetailView(FormMixin, DetailView):
@@ -45,13 +47,13 @@ class CategoryPostView(ListView):
     template_name = 'blog/category.html'
     paginate_by = 10
 
-    def get_queryset(self, *args, **kwargs):
+    def get_queryset(self, *args, **kwargs) -> QuerySet[Category]:
         self.category, post_list = get_category(
             self.kwargs.get('category_slug')
         )
-        return get_comments_count(post_list)
+        return post_list
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict[str, any]:
         context = super().get_context_data(**kwargs)
         context['category'] = self.category
         return context
@@ -62,14 +64,15 @@ class PostMixin:
     template_name = 'blog/create.html'
     form_class = ChangePostForm
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs) -> (
+            HttpResponsePermanentRedirect | HttpResponseRedirect):
         post = self.get_object()
         if (not request.user.is_authenticated
                 or post.author != self.request.user):
             return redirect('blog:post_detail', pk=self.kwargs['pk'])
         return super().dispatch(request, *args, **kwargs)
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse('blog:post_detail', kwargs=dict(pk=self.kwargs['pk']))
 
 
@@ -78,11 +81,11 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     template_name = 'blog/create.html'
     form_class = ChangePostForm
 
-    def get_success_url(self):
+    def get_success_url(self) -> HttpResponse:
         user = self.request.user.username
         return reverse_lazy('blog:profile', kwargs={'username': user})
 
-    def get_context_data(self, **kwargs) -> dict:
+    def get_context_data(self, **kwargs) -> dict[str, any]:
         context = super().get_context_data(**kwargs)
         return context
 

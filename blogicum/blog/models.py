@@ -82,6 +82,7 @@ class Post(PublishedModel):
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор публикации',
+        related_name='post'
     )
     location = models.ForeignKey(
         Location,
@@ -89,6 +90,7 @@ class Post(PublishedModel):
         null=True,
         blank=False,
         verbose_name='Местоположение',
+        related_name='post'
     )
     category = models.ForeignKey(
         Category,
@@ -96,11 +98,10 @@ class Post(PublishedModel):
         null=True,
         blank=False,
         verbose_name='Категория',
+        related_name='post'
     )
     image = models.ImageField(
         upload_to='img/',
-        blank=True,
-        null=True,
         verbose_name='Изображение'
     )
 
@@ -117,13 +118,13 @@ class Comment(models.Model):
         Post,
         on_delete=models.CASCADE,
         verbose_name='Публикация',
-        related_name='post'
+        related_name='comments'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор',
-        related_name='author'
+        related_name='comments'
     )
     text = models.TextField(
         verbose_name='Задаёт текст комментария',
@@ -133,7 +134,7 @@ class Comment(models.Model):
         verbose_name='Дата создания',
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'Комментарий {self.author.username}'
 
     class Meta:
