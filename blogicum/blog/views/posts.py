@@ -102,9 +102,6 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 
 class PostUpdateView(PostMixin, UpdateView):
-    model = Post
-    form_class = ChangePostForm
-    template_name = 'blog/create.html'
 
     def form_valid(self, form) -> HttpResponse:
         if form.is_valid():
