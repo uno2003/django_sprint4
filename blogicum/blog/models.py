@@ -124,7 +124,7 @@ class Comment(models.Model):
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор',
-        related_name='comments'
+        related_name='author_comments'
     )
     text = models.TextField(
         verbose_name='Задаёт текст комментария',
