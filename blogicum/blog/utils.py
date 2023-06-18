@@ -1,14 +1,13 @@
 from blog.models import Post, Comment
 
 from blog.forms import ChangePostForm, CommentForm
-from django.http import HttpResponsePermanentRedirect, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 
 
 class DispatchMixin:
-    def dispatch(self, request, *args, **kwargs) -> (
-            HttpResponsePermanentRedirect | HttpResponseRedirect):
+    def dispatch(self, request, *args, **kwargs) -> HttpResponseRedirect:
         obj = self.get_object()
         if (not request.user.is_authenticated
                 or obj.author != self.request.user):

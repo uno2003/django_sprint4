@@ -12,12 +12,12 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     template_name = 'blog/comment.html'
     form_class = CommentForm
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> CommentForm:
         form.instance.author = self.request.user
         form.instance.post_id = self.kwargs['pk']
         return super().form_valid(form)
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse(
             'blog:post_detail',
             kwargs=dict(pk=self.kwargs['pk'])
@@ -26,7 +26,7 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
 class CommentEditView(LoginRequiredMixin, CommentMixin, UpdateView):
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> CommentForm:
         form.instance.author = self.request.user
         return super().form_valid(form)
 

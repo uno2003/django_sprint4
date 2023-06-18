@@ -101,5 +101,5 @@ class PostUpdateView(PostMixin, UpdateView):
 
 
 class PostDeleteView(LoginRequiredMixin, PostMixin, DeleteView):
-    def get_success_url(self):
+    def get_success_url(self) -> HttpResponse:
         return reverse('blog:index')
