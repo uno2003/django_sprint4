@@ -1,12 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import QuerySet
-from django.http import (HttpResponse,
-                         HttpResponsePermanentRedirect,
-                         HttpResponseRedirect)
-from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
-from django.views.generic import DetailView, ListView, UpdateView
-from django.views.generic import CreateView, DeleteView
+from django.views.generic import (DetailView, ListView, UpdateView,
+                                  CreateView, DeleteView)
 from django.contrib import messages
 from django.views.generic.edit import FormMixin
 
@@ -14,6 +12,7 @@ from blog.models import Post, Category, User
 from blog.forms import ChangePostForm, CommentForm
 from blog.services import get_post, get_category, get_posts
 from blog.services import get_post_comments
+from blog.utils import PostMixin
 
 
 class IndexView(ListView):
@@ -57,23 +56,6 @@ class CategoryPostView(ListView):
         context = super().get_context_data(**kwargs)
         context['category'] = self.category
         return context
-
-
-class PostMixin:
-    model = Post
-    template_name = 'blog/create.html'
-    form_class = ChangePostForm
-
-    def dispatch(self, request, *args, **kwargs) -> (
-            HttpResponsePermanentRedirect | HttpResponseRedirect):
-        post = self.get_object()
-        if (not request.user.is_authenticated
-                or post.author != self.request.user):
-            return redirect('blog:post_detail', pk=self.kwargs['pk'])
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_success_url(self) -> str:
-        return reverse('blog:post_detail', kwargs=dict(pk=self.kwargs['pk']))
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):

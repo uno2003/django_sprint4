@@ -1,10 +1,9 @@
 from django.urls import path
-from blog.views.posts import IndexView, PostDetailView, CategoryPostView
-from blog.views.posts import PostCreateView, PostUpdateView, PostDeleteView
-from blog.views.users import UserLoginView, UserLogoutView
-from blog.views.users import UserEditView, UserProfileView
-from blog.views.comments import CommentCreateView, CommentEditView
-from blog.views.comments import CommentDeleteView
+from blog.views import (IndexView, PostDetailView, CategoryPostView,
+                        PostCreateView, PostUpdateView, PostDeleteView,
+                        UserLoginView, UserLogoutView, UserEditView,
+                        UserProfileView, CommentCreateView, CommentEditView,
+                        CommentDeleteView)
 
 app_name = 'blog'
 

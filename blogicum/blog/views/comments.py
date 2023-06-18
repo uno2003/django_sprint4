@@ -1,28 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
 from django.urls import reverse
 from django.views.generic import CreateView, UpdateView, DeleteView
 
 from blog.forms import CommentForm
 from blog.models import Comment
-
-
-class CommentMixin:
-    model = Comment
-    template_name = 'blog/comment.html'
-    form_class = CommentForm
-
-    def dispatch(self, request, *args, **kwargs):
-        comment = self.get_object()
-        if comment.author != self.request.user:
-            raise Http404()
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_success_url(self):
-        return reverse(
-            'blog:post_detail',
-            kwargs=dict(pk=self.kwargs['post_id'])
-        )
+from blog.utils import CommentMixin
 
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
