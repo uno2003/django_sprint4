@@ -5,7 +5,7 @@ from blog.views.users import (UserLoginView, UserLogoutView,
 from blog.views.comments import (CommentCreateView, CommentEditView,
                                  CommentDeleteView)
 
-__all__ = (
+__all__ = [
     'IndexView',
     'PostDetailView',
     'CategoryPostView',
@@ -19,4 +19,4 @@ __all__ = (
     'CommentCreateView',
     'CommentEditView',
     'CommentDeleteView'
-)
+]
