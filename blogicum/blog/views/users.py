@@ -1,3 +1,4 @@
+import typing
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.db.models import QuerySet
@@ -6,7 +7,7 @@ from django.views.generic import ListView, UpdateView
 from blog.forms import ChangeUserProfileForm
 from blog.models import User
 from blog.services import get_user_posts, get_user
-from blog.utils import RedirectToHomepageMixin
+from blog.mixins import RedirectToHomepageMixin
 
 
 class UserLoginView(RedirectToHomepageMixin, LoginView):
@@ -32,11 +33,13 @@ class UserProfileView(ListView):
     slug_field = "username"
     slug_url_kwarg = "username"
 
-    def get_queryset(self, *args, **kwargs) -> QuerySet:
-        self.user = get_user(self.kwargs)
-        return get_user_posts(self.user)
+    def get_object(self) -> User:
+        return get_user(self.kwargs.get('username'))
 
-    def get_context_data(self, **kwargs) -> dict[str, any]:
+    def get_queryset(self, *args, **kwargs) -> QuerySet:
+        return get_user_posts(self.get_object())
+
+    def get_context_data(self, **kwargs) -> dict[str, typing.Any]:
         context = super().get_context_data(**kwargs)
-        context['profile'] = self.user
+        context['profile'] = self.get_object()
         return context

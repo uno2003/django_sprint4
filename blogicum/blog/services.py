@@ -20,17 +20,17 @@ def get_user_posts(user) -> QuerySet[Post]:
 
 
 def get_posts() -> QuerySet[Post]:
-    post_list = (
+    posts = (
         Post.objects
         .select_related('category')
         .annotate(comment_count=Count('comments'))
         .filter(is_published=True,
                 category__is_published=True,
-                pub_date__lte=timezone.now()).order_by('-pub_date')
-
+                pub_date__lte=timezone.now())
+        .order_by('-pub_date')
     )
 
-    return post_list
+    return posts
 
 
 def get_post(id: int) -> Post:
@@ -44,10 +44,10 @@ def get_category(category_slug: str) -> tuple[Category, QuerySet[Post]]:
         .filter(slug=category_slug,
                 is_published=True)
     )
-    post_list = get_posts().filter(category=category)
-    return category, post_list
+    posts = get_posts().filter(category=category)
+    return category, posts
 
 
-def get_user(kwargs) -> str:
-    user = get_object_or_404(User, username=kwargs.get('username'))
+def get_user(username) -> User:
+    user = get_object_or_404(User, username=username)
     return user

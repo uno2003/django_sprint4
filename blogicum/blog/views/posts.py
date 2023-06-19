@@ -1,6 +1,7 @@
+import typing
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import QuerySet
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import (DetailView, ListView, UpdateView,
@@ -10,8 +11,8 @@ from django.views.generic.edit import FormMixin
 from blog.models import Post, Category
 from blog.forms import ChangePostForm, CommentForm
 from blog.services import get_post, get_category, get_posts, get_post_comments
-from blog.utils import (PostMixin, PostFormValidationMixin,
-                        RedirectToHomepageMixin)
+from blog.mixins import (PostMixin, PostFormValidationMixin,
+                         RedirectToHomepageMixin)
 
 
 class IndexView(ListView):
@@ -19,10 +20,6 @@ class IndexView(ListView):
     ordering = 'id'
     paginate_by = 10
     template_name = 'blog/index.html'
-
-    def get_context_data(self, **kwargs) -> dict[str, any]:
-        context = super().get_context_data(**kwargs)
-        return context
 
     def get_queryset(self) -> QuerySet[Post]:
         return get_posts()
@@ -32,7 +29,7 @@ class PostDetailView(FormMixin, DetailView):
     model = Post
     template_name = 'blog/detail.html'
 
-    def get(self, request, pk: int) -> HttpResponse:
+    def get(self, request: HttpRequest, pk: int) -> HttpResponse:
         post = get_post(pk)
         context = {'post': post}
         context['form'] = CommentForm()
@@ -51,7 +48,7 @@ class CategoryPostView(ListView):
         )
         return post_list
 
-    def get_context_data(self, **kwargs) -> dict[str, any]:
+    def get_context_data(self, **kwargs) -> dict[str, typing.Any]:
         context = super().get_context_data(**kwargs)
         context['category'] = self.category
         return context
@@ -65,10 +62,6 @@ class PostCreateView(LoginRequiredMixin, PostFormValidationMixin, CreateView):
     def get_success_url(self) -> HttpResponse:
         user = self.request.user.username
         return reverse_lazy('blog:profile', kwargs={'username': user})
-
-    def get_context_data(self, **kwargs) -> dict[str, any]:
-        context = super().get_context_data(**kwargs)
-        return context
 
 
 class PostUpdateView(PostMixin, PostFormValidationMixin, UpdateView):

@@ -5,7 +5,9 @@ from blog.views import (IndexView, PostDetailView, CategoryPostView,
                         UserProfileView, CommentCreateView, CommentEditView,
                         CommentDeleteView)
 
-app_name = 'blog'
+from blog.apps import BlogConfig
+
+app_name = BlogConfig.name
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),

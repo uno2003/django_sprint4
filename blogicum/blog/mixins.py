@@ -1,4 +1,5 @@
-from django.http import HttpResponseRedirect, HttpResponse
+from django.forms import ModelForm
+from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 
@@ -12,7 +13,11 @@ class RedirectToHomepageMixin:
 
 
 class DispatchMixin:
-    def dispatch(self, request, *args, **kwargs) -> HttpResponseRedirect:
+    def dispatch(self,
+                 request: HttpRequest,
+                 *args,
+                 **kwargs
+                 ) -> HttpResponseRedirect:
         obj = self.get_object()
         if (not request.user.is_authenticated
                 or obj.author != self.request.user):
@@ -27,15 +32,13 @@ class DispatchMixin:
 
 
 class PostFormValidationMixin:
-    def form_valid(self, form) -> HttpResponse:
+    def form_valid(self, form: ModelForm) -> HttpResponse:
         form.instance.author = self.request.user
         if form.is_valid():
             self.object = form.save()
             form.instance = self.object
             form.save()
             return super().form_valid(form)
-        else:
-            return self.form_invalid(form)
 
 
 class PostMixin(DispatchMixin):
