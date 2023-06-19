@@ -43,10 +43,10 @@ class CategoryPostView(ListView):
     paginate_by = 10
 
     def get_queryset(self, *args, **kwargs) -> QuerySet[Category]:
-        self.category, post_list = get_category(
+        self.category, posts = get_category(
             self.kwargs.get('category_slug')
         )
-        return post_list
+        return posts
 
     def get_context_data(self, **kwargs) -> dict[str, typing.Any]:
         context = super().get_context_data(**kwargs)
