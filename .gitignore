@@ -151,4 +151,3 @@ media/
 sent_emails/
 /blogicum/.env
 db.json
-**/migrations/*
