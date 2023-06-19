@@ -1,27 +1,23 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.db.models import QuerySet
-from django.urls import reverse_lazy
 from django.views.generic import ListView, UpdateView
 
 from blog.forms import ChangeUserProfileForm
 from blog.models import User
 from blog.services import get_user_posts, get_user
+from blog.utils import RedirectToHomepageMixin
 
 
-class UserRedirectMixin:
-    success_url = reverse_lazy('blog:index')
-
-
-class UserLoginView(UserRedirectMixin, LoginView):
+class UserLoginView(RedirectToHomepageMixin, LoginView):
     template_name = 'registration/login.html'
 
 
-class UserLogoutView(LoginRequiredMixin, UserRedirectMixin, LogoutView):
+class UserLogoutView(LoginRequiredMixin, RedirectToHomepageMixin, LogoutView):
     template_name = 'registration/logged_out.html'
 
 
-class UserEditView(LoginRequiredMixin, UserRedirectMixin, UpdateView):
+class UserEditView(LoginRequiredMixin, RedirectToHomepageMixin, UpdateView):
     template_name = 'blog/user.html'
     form_class = ChangeUserProfileForm
 

@@ -1,9 +1,14 @@
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
 from blog.models import Post, Comment
 from blog.forms import ChangePostForm, CommentForm
+
+
+class RedirectToHomepageMixin:
+    def get_success_url(self) -> HttpResponse:
+        return reverse_lazy('blog:index')
 
 
 class DispatchMixin:
@@ -38,16 +43,6 @@ class PostMixin(DispatchMixin):
     template_name = 'blog/create.html'
     form_class = ChangePostForm
     url_key = 'pk'
-
-    def form_valid(self, form) -> HttpResponse:
-        form.instance.author = self.request.user
-        if form.is_valid():
-            self.object = form.save()
-            form.instance = self.object
-            form.save()
-            return super().form_valid(form)
-        else:
-            return self.form_invalid(form)
 
 
 class CommentMixin(DispatchMixin):

@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import QuerySet
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.views.generic import (DetailView, ListView, UpdateView,
                                   CreateView, DeleteView)
 from django.views.generic.edit import FormMixin
@@ -10,7 +10,8 @@ from django.views.generic.edit import FormMixin
 from blog.models import Post, Category
 from blog.forms import ChangePostForm, CommentForm
 from blog.services import get_post, get_category, get_posts, get_post_comments
-from blog.utils import PostMixin, PostFormValidationMixin
+from blog.utils import (PostMixin, PostFormValidationMixin,
+                        RedirectToHomepageMixin)
 
 
 class IndexView(ListView):
@@ -74,6 +75,6 @@ class PostUpdateView(PostMixin, PostFormValidationMixin, UpdateView):
     pass
 
 
-class PostDeleteView(LoginRequiredMixin, PostMixin, DeleteView):
-    def get_success_url(self) -> HttpResponse:
-        return reverse('blog:index')
+class PostDeleteView(LoginRequiredMixin, RedirectToHomepageMixin,
+                     PostMixin, DeleteView):
+    pass
