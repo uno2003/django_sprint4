@@ -5,14 +5,12 @@ from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import (DetailView, ListView, UpdateView,
                                   CreateView, DeleteView)
-from django.contrib import messages
 from django.views.generic.edit import FormMixin
 
-from blog.models import Post, Category, User
+from blog.models import Post, Category
 from blog.forms import ChangePostForm, CommentForm
-from blog.services import get_post, get_category, get_posts
-from blog.services import get_post_comments
-from blog.utils import PostMixin
+from blog.services import get_post, get_category, get_posts, get_post_comments
+from blog.utils import PostMixin, PostFormValidationMixin
 
 
 class IndexView(ListView):
@@ -58,7 +56,7 @@ class CategoryPostView(ListView):
         return context
 
 
-class PostCreateView(LoginRequiredMixin, CreateView):
+class PostCreateView(LoginRequiredMixin, PostFormValidationMixin, CreateView):
     model = Post
     template_name = 'blog/create.html'
     form_class = ChangePostForm
@@ -71,33 +69,9 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         return context
 
-    def form_valid(self, form) -> HttpResponse:
-        writer = User.objects.get(username=self.request.user)
-        form.instance.author = writer
-        if form.is_valid():
-            self.object = form.save()
-            form.instance = self.object
-            form.save()
-            return super().form_valid(form)
-        else:
-            return self.form_invalid(form)
 
-
-class PostUpdateView(PostMixin, UpdateView):
-
-    def form_valid(self, form) -> HttpResponse:
-        if form.is_valid():
-            self.object = form.save()
-            form.instance = self.object
-            form.save()
-            messages.add_message(
-                self.request,
-                messages.SUCCESS,
-                'Новость исправлена'
-            )
-            return super().form_valid(form)
-        else:
-            return self.render_to_response(self.get_context_data(form=form))
+class PostUpdateView(PostMixin, PostFormValidationMixin, UpdateView):
+    pass
 
 
 class PostDeleteView(LoginRequiredMixin, PostMixin, DeleteView):
