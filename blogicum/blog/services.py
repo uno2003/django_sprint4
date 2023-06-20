@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Count
 
-from blog.models import Category, Post, Comment, User
+from blog.models import Category, Post, Comment, UserProfile
 
 
 def get_post_comments(post_id) -> QuerySet[Comment]:
@@ -48,6 +48,6 @@ def get_category(category_slug: str) -> tuple[Category, QuerySet[Post]]:
     return category, posts
 
 
-def get_user(username) -> User:
-    user = get_object_or_404(User, username=username)
+def get_user(username) -> UserProfile:
+    user = get_object_or_404(UserProfile, username=username)
     return user

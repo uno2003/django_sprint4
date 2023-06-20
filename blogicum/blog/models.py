@@ -1,9 +1,32 @@
+import typing
+
+from django.contrib.auth.models import AbstractUser
+from django.core.validators import FileExtensionValidator
 from django.db import models
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-User = get_user_model()
+
+class UserProfile(AbstractUser):
+    avatar = models.ImageField(
+        blank=True,
+        null=True,
+        upload_to='avatars/',
+        default='default-avatar.png',
+        validators=[FileExtensionValidator(
+            allowed_extensions=['jpeg', 'jpg', 'png']
+        )],
+        verbose_name='Фото профиля'
+    )
+
+    def __str__(self) -> str:
+        return self.username
+
+    def avatar_tag(self) -> typing.Any:
+        return mark_safe('<img src="%s" width="50" height="50" />'
+                         % (self.avatar.url))
+
+    avatar_tag.short_description = 'Аватар'
 
 
 class PublishedModel(models.Model):
@@ -80,7 +103,7 @@ class Post(PublishedModel):
                   ' будущем — можно делать отложенные публикации.',
     )
     author = models.ForeignKey(
-        User,
+        UserProfile,
         on_delete=models.CASCADE,
         verbose_name='Автор публикации',
         related_name='post'
@@ -113,9 +136,9 @@ class Post(PublishedModel):
     def __str__(self) -> str:
         return self.title
 
-    def image_tag(self):
-        return mark_safe('<img src="%s" width="150" height="150" />'
-                         % (self.image.url))
+    def image_tag(self) -> typing.Any:
+        return mark_safe('<img src="%s"'
+                         ' width="150" height="150" />' % (self.image.url))
 
     image_tag.short_description = 'Превью'
 
@@ -128,7 +151,7 @@ class Comment(models.Model):
         related_name='comments'
     )
     author = models.ForeignKey(
-        User,
+        UserProfile,
         on_delete=models.CASCADE,
         verbose_name='Автор',
         related_name='author_comments'

@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import gettext_lazy as _
-from .models import User, Post, Comment
+from .models import UserProfile, Post, Comment
 
 
 class ChangeUserProfileForm(UserChangeForm):
@@ -16,23 +16,24 @@ class ChangeUserProfileForm(UserChangeForm):
     )
 
     class Meta:
-        model = User
+        model = UserProfile
         fields = (
+            'username',
             'first_name',
             'last_name',
-            'username',
             'email',
+            'avatar',
         )
 
 
 class RegisterUserForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
-        model = User
+        model = UserProfile
         fields = (
+            'username',
             'first_name',
             'last_name',
-            'username',
-            'email',
+            'email'
         )
 
 

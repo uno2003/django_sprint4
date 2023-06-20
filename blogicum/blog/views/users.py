@@ -5,7 +5,7 @@ from django.db.models import QuerySet
 from django.views.generic import ListView, UpdateView
 
 from blog.forms import ChangeUserProfileForm
-from blog.models import User
+from blog.models import UserProfile
 from blog.services import get_user_posts, get_user
 from .mixins import RedirectToHomepageMixin
 
@@ -22,18 +22,18 @@ class UserEditView(LoginRequiredMixin, RedirectToHomepageMixin, UpdateView):
     template_name = 'blog/user.html'
     form_class = ChangeUserProfileForm
 
-    def get_object(self) -> User:
+    def get_object(self) -> UserProfile:
         return self.request.user
 
 
 class UserProfileView(ListView):
     template_name = 'blog/profile.html'
-    model = User
+    model = UserProfile
     paginate_by = 10
     slug_field = "username"
     slug_url_kwarg = "username"
 
-    def get_object(self) -> User:
+    def get_object(self) -> UserProfile:
         return get_user(self.kwargs.get('username'))
 
     def get_queryset(self, *args, **kwargs) -> QuerySet:

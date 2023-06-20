@@ -15,7 +15,8 @@ SECRET_KEY = env.str('SECRET_KEY', 'defautl-sacret-key')
 DEBUG = env.bool('DEBUG', True)
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
+# authentication user model
+AUTH_USER_MODEL = 'blog.UserProfile'
 # Application definition
 
 INSTALLED_APPS = [

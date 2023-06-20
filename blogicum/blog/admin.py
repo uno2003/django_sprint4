@@ -1,5 +1,29 @@
 from django.contrib import admin
-from .models import Post, Category, Location, Comment
+from .models import Post, Category, Location, Comment, UserProfile
+
+
+@admin.register(UserProfile)
+class UserProfile(admin.ModelAdmin):
+    fields = [
+        'username',
+        'avatar_tag',
+        'first_name',
+        'last_name',
+        'email',
+        'avatar',
+    ]
+    list_display = [
+        'avatar_tag',
+        'username',
+        'first_name',
+        'last_name',
+        'email'
+    ]
+    list_display_links = [
+        'avatar_tag',
+        'username',
+    ]
+    readonly_fields = ['avatar_tag']
 
 
 @admin.register(Post)
