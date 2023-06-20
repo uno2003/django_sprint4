@@ -4,7 +4,7 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 
 from blog.forms import CommentForm
 from blog.models import Comment
-from blog.mixins import CommentMixin
+from .mixins import CommentMixin
 
 
 class CommentCreateView(LoginRequiredMixin, CreateView):

@@ -35,10 +35,9 @@ class PostFormValidationMixin:
     def form_valid(self, form: ModelForm) -> HttpResponse:
         form.instance.author = self.request.user
         if form.is_valid():
-            self.object = form.save()
-            form.instance = self.object
-            form.save()
+            form.instance = form.save()
             return super().form_valid(form)
+        return self.form_invalid(form)
 
 
 class PostMixin(DispatchMixin):

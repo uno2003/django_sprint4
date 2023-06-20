@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 User = get_user_model()
 
@@ -111,6 +112,12 @@ class Post(PublishedModel):
 
     def __str__(self) -> str:
         return self.title
+
+    def image_tag(self):
+        return mark_safe('<img src="%s" width="150" height="150" />'
+                         % (self.image.url))
+
+    image_tag.short_description = 'Превью'
 
 
 class Comment(models.Model):

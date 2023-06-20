@@ -11,8 +11,8 @@ from django.views.generic.edit import FormMixin
 from blog.models import Post, Category
 from blog.forms import ChangePostForm, CommentForm
 from blog.services import get_post, get_category, get_posts, get_post_comments
-from blog.mixins import (PostMixin, PostFormValidationMixin,
-                         RedirectToHomepageMixin)
+from .mixins import (PostMixin, PostFormValidationMixin,
+                     RedirectToHomepageMixin)
 
 
 class IndexView(ListView):

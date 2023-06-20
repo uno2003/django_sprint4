@@ -4,6 +4,17 @@ from .models import Post, Category, Location, Comment
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
+    fields = [
+        'title',
+        'author',
+        'category',
+        'location',
+        'text',
+        'pub_date',
+        'is_published',
+        'image',
+        'image_tag'
+    ]
     list_display = (
         'title',
         'author',
@@ -16,6 +27,7 @@ class PostAdmin(admin.ModelAdmin):
     list_filter = ('category', 'location', 'author',)
     search_fields = ('title', 'author', 'category',)
     list_display_links = ('title',)
+    readonly_fields = ['image_tag']
 
 
 @admin.register(Category)

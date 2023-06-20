@@ -7,7 +7,7 @@ from django.views.generic import ListView, UpdateView
 from blog.forms import ChangeUserProfileForm
 from blog.models import User
 from blog.services import get_user_posts, get_user
-from blog.mixins import RedirectToHomepageMixin
+from .mixins import RedirectToHomepageMixin
 
 
 class UserLoginView(RedirectToHomepageMixin, LoginView):
