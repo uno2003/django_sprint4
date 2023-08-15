@@ -2,7 +2,7 @@ import typing
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.db.models import QuerySet
-from django.views.generic import ListView, UpdateView
+from django.views.generic import ListView, UpdateView, DetailView
 
 from blog.forms import ChangeUserProfileForm
 from blog.models import UserProfile
@@ -26,12 +26,13 @@ class UserEditView(LoginRequiredMixin, RedirectToHomepageMixin, UpdateView):
         return self.request.user
 
 
-class UserProfileView(ListView):
+class UserProfileView(DetailView):
     template_name = 'blog/profile.html'
     model = UserProfile
     paginate_by = 10
     slug_field = "username"
     slug_url_kwarg = "username"
+
 
     def get_object(self) -> UserProfile:
         return get_user(self.kwargs.get('username'))
@@ -42,4 +43,5 @@ class UserProfileView(ListView):
     def get_context_data(self, **kwargs) -> dict[str, typing.Any]:
         context = super().get_context_data(**kwargs)
         context['profile'] = self.get_object()
+        context['page_obj'] = self.get_queryset()
         return context

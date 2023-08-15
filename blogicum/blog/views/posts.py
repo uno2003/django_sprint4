@@ -2,7 +2,7 @@ import typing
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import QuerySet
 from django.http import HttpResponse, HttpRequest
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import (DetailView, ListView, UpdateView,
                                   CreateView, DeleteView)
@@ -10,9 +10,10 @@ from django.views.generic.edit import FormMixin
 
 from blog.models import Post, Category
 from blog.forms import ChangePostForm, CommentForm
-from blog.services import get_post, get_category, get_posts, get_post_comments
+from blog.services import get_post, get_category, get_posts, get_post_comments, get_user
 from .mixins import (PostMixin, PostFormValidationMixin,
                      RedirectToHomepageMixin)
+from ..services import get_posts_list
 
 
 class IndexView(ListView):
@@ -30,12 +31,13 @@ class PostDetailView(FormMixin, DetailView):
     template_name = 'blog/detail.html'
 
     def get(self, request: HttpRequest, pk: int) -> HttpResponse:
-        post = get_post(pk)
+        post = get_object_or_404(Post, pk=pk)
+        if post.author != self.request.user:
+            post = get_object_or_404(Post, pk=pk, is_published=True)
         context = {'post': post}
         context['form'] = CommentForm()
         context['comments'] = get_post_comments(post.id)
         return render(request, self.template_name, context)
-
 
 class CategoryPostView(ListView):
     model = Category

@@ -1,4 +1,4 @@
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Count
@@ -29,7 +29,19 @@ def get_posts() -> QuerySet[Post]:
                 pub_date__lte=timezone.now())
         .order_by('-pub_date')
     )
+    return posts
 
+
+def get_posts_list(user=None) -> QuerySet[Post]:
+    posts = (
+        Post.objects
+        .select_related('category')
+        .annotate(comment_count=Count('comments'))
+        .filter(Q(is_published=True) | Q(author=user),
+                category__is_published=True,
+                pub_date__lte=timezone.now())
+        .order_by('-pub_date')
+    )
     return posts
 
 

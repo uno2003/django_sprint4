@@ -18,7 +18,7 @@
     </ul>
   </small>
   <br>
-  <h3 class="mb-5 text-center">Публикации пользователя</h3>
+  <h3 class="mb-5 text-center">Публикации пользователя {{ profile }}</h3>
   {% for post in page_obj %}
     <article class="mb-5">
       {% include "includes/post_card.html" %}
